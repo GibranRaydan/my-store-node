@@ -1,35 +1,35 @@
 import boom from "@hapi/boom";
-import { pool } from "../libs/postgres.pool.js";
+import { sequelizeClient } from "../libs/sequelize.js";
 
 class UserService {
 
   constructor(){
-    this.pool = pool;
-    this.pool.on('error', (err) => console.log(err));
   }
   async create(data) {
-    return data;
+    return await sequelizeClient.models.User.create(data);
   }
 
   async find() {
-    const query = 'SELECT * from tasks';
-    const rta = await this.pool.query(query);
-    return rta.rows;
+    return await sequelizeClient.models.User.findAll();
   }
 
   async findOne(id) {
-    return { id };
+    const user = await sequelizeClient.models.User.findByPk(id);
+    if(!user) {
+      throw boom.notFound('user not found');
+    }
+    return user;
   }
 
   async update(id, changes) {
-    return {
-      id,
-      changes,
-    };
+    const user = await this.findOne(id);
+    return await user.update(changes);
   }
 
   async delete(id) {
-    return { id };
+    const user = await this.findOne(id);
+    await user.destroy();
+    return id;  
   }
 
 }
