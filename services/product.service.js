@@ -1,6 +1,7 @@
 
 import boom from "@hapi/boom";
 import { faker } from "@faker-js/faker";
+import { sequelizeClient } from "../libs/sequelize.js";
 
 class ProductService {
     constructor() {
@@ -32,11 +33,9 @@ class ProductService {
     }
 
     async find() {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve(this.products);
-            }, 1000);
-        })
+        const query = 'SELECT * from tasks';
+        const [data] = await sequelizeClient.query(query);
+        return data;
     }
 
     async findOne(id) {
